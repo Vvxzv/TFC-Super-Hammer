@@ -1,0 +1,12 @@
+{
+	"type": "tfc:heating",
+	"ingredient": {
+		"item": "tfcsuperhammer:metal/superhammer/bismuth_bronze"
+	},
+	"temperature": 985.0,
+	"result_fluid": {
+		"fluid": "tfc:metal/bismuth_bronze",
+		"amount": 200
+	},
+	"use_durability": true
+}

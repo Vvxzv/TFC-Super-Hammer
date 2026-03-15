@@ -1,0 +1,11 @@
+{
+	"type": "tfc:heating",
+	"ingredient": {
+		"item": "tfcsuperhammer:metal/supershovel_head/blue_steel"
+	},
+	"temperature": 1540.0,
+	"result_fluid": {
+		"fluid": "tfc:metal/blue_steel",
+		"amount": 200
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"type": "tfc:anvil",
+	"result": {
+		"item": "tfcsuperhammer:metal/supershovel_head/blue_steel",
+		"count": 1
+	},
+	"input": {
+		"item": "tfc:metal/double_ingot/blue_steel"
+	},
+	"rules": [
+		"punch_last",
+		"hit_second_last",
+		"upset_third_last"
+	],
+	"tier": 6,
+	"apply_forging_bonus": true
+}

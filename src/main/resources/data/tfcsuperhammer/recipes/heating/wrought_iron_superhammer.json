@@ -1,0 +1,12 @@
+{
+	"type": "tfc:heating",
+	"ingredient": {
+		"item": "tfcsuperhammer:metal/superhammer/wrought_iron"
+	},
+	"temperature": 1535.0,
+	"result_fluid": {
+		"fluid": "tfc:metal/wrought_iron",
+		"amount": 200
+	},
+	"use_durability": true
+}

@@ -1,0 +1,11 @@
+{
+	"type": "tfc:heating",
+	"ingredient": {
+		"item": "tfcsuperhammer:metal/supershovel_head/bronze"
+	},
+	"temperature": 950.0,
+	"result_fluid": {
+		"fluid": "tfc:metal/bronze",
+		"amount": 200
+	}
+}
