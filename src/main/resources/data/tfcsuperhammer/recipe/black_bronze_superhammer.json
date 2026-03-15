@@ -1,0 +1,35 @@
+{
+	"type": "tfc:advanced_shaped_crafting",
+	"result": {
+		"stack": {
+			"id": "tfcsuperhammer:metal/superhammer/black_bronze",
+			"count": 1,
+			"components": {
+				"tfc:heat": {}
+			}
+		},
+		"modifiers": [
+			{
+				"type": "tfc:copy_forging_bonus"
+			}
+		]
+	},
+	"pattern": [
+		"a",
+		"b"
+	],
+	"key": {
+		"a": {
+			"item": "tfcsuperhammer:metal/superhammer_head/black_bronze"
+		},
+		"b": {
+			"tag": "c:rods/wooden"
+		}
+	},
+	"input_row": 0,
+	"input_column": 0,
+	"_kubejs_changed_marker": {
+		"source": "server_scripts:main.js",
+		"line": 5
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"type": "tfc:heating",
+	"ingredient": {
+		"item": "tfcsuperhammer:metal/supershovel/blue_steel"
+	},
+	"temperature": 1540.0,
+	"result_fluid": {
+		"id": "tfc:metal/blue_steel",
+		"amount": 200
+	},
+	"use_durability": true,
+	"_kubejs_changed_marker": {
+		"source": "server_scripts:main.js",
+		"line": 51
+	}
+}

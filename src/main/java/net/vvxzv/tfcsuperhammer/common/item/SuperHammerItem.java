@@ -12,6 +12,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -24,21 +25,22 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.event.level.BlockEvent;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.vvxzv.tfcsuperhammer.Config;
+import net.vvxzv.tfcsuperhammer.common.registry.Data;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
-    private static final String MODE_TAG = "super_hammer_mode";
+    private final Tier tier;
     private final TagKey<Block> blocks;
 
-    public SuperHammerItem(Tier tier, float attackDamage, float attackSpeed, Item.Properties properties) {
-        super(tier, attackDamage, attackSpeed, BlockTags.MINEABLE_WITH_PICKAXE, properties);
+    public SuperHammerItem(Tier tier, Item.Properties properties) {
+        super(tier,  BlockTags.MINEABLE_WITH_PICKAXE, properties);
+        this.tier = tier;
         this.blocks = BlockTags.MINEABLE_WITH_PICKAXE;
     }
 
@@ -70,9 +72,9 @@ public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
     }
 
     private HammerMode getCurrentMode(ItemStack stack) {
-        if (stack.hasTag() && stack.getTag().contains(MODE_TAG)) {
+        if (stack.get(Data.SUPER_TOOL_MODE) != null) {
             try {
-                HammerMode mode = HammerMode.values()[stack.getTag().getInt(MODE_TAG)];
+                HammerMode mode = HammerMode.values()[stack.get(Data.SUPER_TOOL_MODE)];
                 if (mode == HammerMode.GIANT_5x5 && !isGiantModeEnabled()) {
                     this.setCurrentMode(stack, HammerMode.DEFAULT_3x3);
                     return HammerMode.DEFAULT_3x3;
@@ -88,7 +90,7 @@ public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
     }
 
     private void setCurrentMode(ItemStack stack, HammerMode mode) {
-        stack.getOrCreateTag().putInt(MODE_TAG, mode.ordinal());
+        stack.set(Data.SUPER_TOOL_MODE, mode.ordinal());
     }
 
     private String getModeTranslateKey(HammerMode mode) {
@@ -101,7 +103,7 @@ public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
 
     @Override
     public float getDestroySpeed(ItemStack pStack, BlockState pState) {
-        return pState.is(this.blocks) ? (this.speed * 0.4f) : 1.0F;
+        return pState.is(this.blocks) ? (this.tier.getSpeed() * 0.4f) : 1.0F;
     }
 
     @Override
@@ -118,7 +120,7 @@ public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
     private void dropResourcesAndBreak(BlockState state, BlockPos pos, Player player, ItemStack stack, Level level) {
         if (!player.isCreative()) {
             Block.dropResources(state, level, pos, state.hasBlockEntity() ? level.getBlockEntity(pos) : null, player, player.getMainHandItem());
-            stack.hurtAndBreak(1, player, (p) -> p.broadcastBreakEvent(player.getUsedItemHand()));
+            stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
         }
     }
 
@@ -156,7 +158,8 @@ public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
 
             final BlockState stateAt = level.getBlockState(pos);
             final BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, stateAt, player);
-            if (MinecraftForge.EVENT_BUS.post(event)) continue;
+            NeoForge.EVENT_BUS.post(event);
+            if (event.isCanceled()) continue;
 
             if (stateAt.hasProperty(BlockStateProperties.LAYERS)) {
                 int layers = stateAt.getValue(BlockStateProperties.LAYERS);
@@ -172,12 +175,12 @@ public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
     }
 
     @Override
-    public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
-        return ToolActions.DEFAULT_PICKAXE_ACTIONS.contains(toolAction);
+    public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
+        return ItemAbilities.DEFAULT_PICKAXE_ACTIONS.contains(itemAbility);
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack pStack, TooltipContext p_339594_, List<Component> pTooltipComponents, TooltipFlag p_41424_) {
         HammerMode mode = this.getCurrentMode(pStack);
         String key = this.getModeTranslateKey(mode);
         pTooltipComponents.add(

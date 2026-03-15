@@ -1,0 +1,15 @@
+{
+	"type": "tfc:heating",
+	"ingredient": {
+		"item": "tfcsuperhammer:metal/superhammer_head/red_steel"
+	},
+	"temperature": 1540.0,
+	"result_fluid": {
+		"id": "tfc:metal/red_steel",
+		"amount": 200
+	},
+	"_kubejs_changed_marker": {
+		"source": "server_scripts:main.js",
+		"line": 5
+	}
+}

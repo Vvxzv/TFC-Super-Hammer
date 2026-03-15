@@ -1,0 +1,15 @@
+{
+	"type": "tfc:heating",
+	"ingredient": {
+		"item": "tfcsuperhammer:metal/superhammer_head/copper"
+	},
+	"temperature": 1080.0,
+	"result_fluid": {
+		"id": "tfc:metal/copper",
+		"amount": 200
+	},
+	"_kubejs_changed_marker": {
+		"source": "server_scripts:main.js",
+		"line": 5
+	}
+}

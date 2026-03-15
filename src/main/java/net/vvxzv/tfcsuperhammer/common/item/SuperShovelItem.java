@@ -12,6 +12,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -23,22 +24,23 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.event.level.BlockEvent;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.vvxzv.tfcsuperhammer.Config;
+import net.vvxzv.tfcsuperhammer.common.registry.Data;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class SuperShovelItem  extends ToolItem implements CreativeMiningTool {
-    private static final String MODE_TAG = "super_shovel_mode";
+    private final Tier tier;
     private final TagKey<Block> blocks;
 
-    public SuperShovelItem(Tier tier, float attackDamage, float attackSpeed, Properties properties) {
-        super(tier, attackDamage, attackSpeed, BlockTags.MINEABLE_WITH_SHOVEL, properties);
+    public SuperShovelItem(Tier tier, Properties properties) {
+        super(tier, BlockTags.MINEABLE_WITH_SHOVEL, properties);
+        this.tier = tier;
         this.blocks = BlockTags.MINEABLE_WITH_SHOVEL;
     }
 
@@ -70,9 +72,9 @@ public class SuperShovelItem  extends ToolItem implements CreativeMiningTool {
     }
 
     private ShovelMode getCurrentMode(ItemStack stack) {
-        if (stack.hasTag() && stack.getTag().contains(MODE_TAG)) {
+        if (stack.get(Data.SUPER_TOOL_MODE) != null) {
             try {
-                ShovelMode mode = ShovelMode.values()[stack.getTag().getInt(MODE_TAG)];
+                ShovelMode mode = ShovelMode.values()[stack.get(Data.SUPER_TOOL_MODE)];
                 if (mode == ShovelMode.GIANT_5x5 && !isGiantModeEnabled()) {
                     this.setCurrentMode(stack, ShovelMode.DEFAULT_5x1);
                     return ShovelMode.DEFAULT_5x1;
@@ -88,7 +90,7 @@ public class SuperShovelItem  extends ToolItem implements CreativeMiningTool {
     }
 
     private void setCurrentMode(ItemStack stack, ShovelMode mode) {
-        stack.getOrCreateTag().putInt(MODE_TAG, mode.ordinal());
+        stack.set(Data.SUPER_TOOL_MODE, mode.ordinal());
     }
 
     private String getModeTranslateKey(ShovelMode mode) {
@@ -101,7 +103,7 @@ public class SuperShovelItem  extends ToolItem implements CreativeMiningTool {
 
     @Override
     public float getDestroySpeed(ItemStack pStack, BlockState pState) {
-        return pState.is(this.blocks) ? (this.speed * 0.4f) : 1.0F;
+        return pState.is(this.blocks) ? (this.tier.getSpeed() * 0.4f) : 1.0F;
     }
 
     @Override
@@ -118,7 +120,7 @@ public class SuperShovelItem  extends ToolItem implements CreativeMiningTool {
     private void dropResourcesAndBreak(BlockState state, BlockPos pos, Player player, ItemStack stack, Level level) {
         if (!player.isCreative()) {
             Block.dropResources(state, level, pos, state.hasBlockEntity() ? level.getBlockEntity(pos) : null, player, player.getMainHandItem());
-            stack.hurtAndBreak(1, player, (p) -> p.broadcastBreakEvent(player.getUsedItemHand()));
+            stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
         }
     }
 
@@ -140,7 +142,8 @@ public class SuperShovelItem  extends ToolItem implements CreativeMiningTool {
 
             final BlockState stateAt = level.getBlockState(pos);
             final BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, stateAt, player);
-            if (MinecraftForge.EVENT_BUS.post(event)) continue;
+            NeoForge.EVENT_BUS.post(event);
+            if (event.isCanceled()) continue;
 
             if (stateAt.hasProperty(BlockStateProperties.LAYERS)) {
                 int layers = stateAt.getValue(BlockStateProperties.LAYERS);
@@ -181,12 +184,12 @@ public class SuperShovelItem  extends ToolItem implements CreativeMiningTool {
     }
 
     @Override
-    public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
-        return ToolActions.DEFAULT_SHOVEL_ACTIONS.contains(toolAction);
+    public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
+        return ItemAbilities.DEFAULT_SHOVEL_ACTIONS.contains(itemAbility);
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack pStack, TooltipContext p_339594_, List<Component> pTooltipComponents, TooltipFlag p_41424_) {
         ShovelMode mode = this.getCurrentMode(pStack);
         String key = this.getModeTranslateKey(mode);
         pTooltipComponents.add(

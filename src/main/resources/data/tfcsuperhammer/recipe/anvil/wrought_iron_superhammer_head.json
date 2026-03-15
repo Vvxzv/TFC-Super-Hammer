@@ -1,0 +1,24 @@
+{
+	"type": "tfc:anvil",
+	"result": {
+		"id": "tfcsuperhammer:metal/superhammer_head/wrought_iron",
+		"count": 1,
+		"components": {
+			"tfc:heat": {}
+		}
+	},
+	"ingredient": {
+		"item": "tfc:metal/double_ingot/wrought_iron"
+	},
+	"rules": [
+		"punch_last",
+		"shrink_second_last",
+		"upset_third_last"
+	],
+	"tier": 3,
+	"apply_bonus": true,
+	"_kubejs_changed_marker": {
+		"source": "server_scripts:main.js",
+		"line": 5
+	}
+}
