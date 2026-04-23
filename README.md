@@ -1,16 +1,18 @@
 # TFC Super Hammer
 ### https://www.curseforge.com/minecraft/mc-mods/tfc-super-hammer
+
+---
 ## Mod Contents
 ### Tools Modes
 #### Super Hammer:
 1. 3x3 default mode, used for excavating a 3x3 range.
 2. 5x3 horizontal scaling mode, used for excavating a 5x3 range in the horizontal direction.
-3. 5x5 giant mode, used for excavating a 5x5 range. (if enabled in config)
+3. 5x5 giant mode, used for excavating a 5x5 range. (If enabled in config.)
 
 #### Super Shovel:
 1. 5x1 default mode, used for excavating a 5x1 range.
 2. 3x3 square mode, used for excavating a 3x3 range.
-3. 5x5 giant mode, used for excavating a 5x5 range. (if enabled in config)
+3. 5x5 giant mode, used for excavating a 5x5 range. (If enabled in config.)
 
 ### If you hold down the shift key while mining, you will only mine current one block.
 

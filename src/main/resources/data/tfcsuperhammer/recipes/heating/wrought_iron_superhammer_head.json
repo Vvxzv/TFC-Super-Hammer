@@ -5,7 +5,7 @@
 	},
 	"temperature": 1535.0,
 	"result_fluid": {
-		"fluid": "tfc:metal/wrought_iron",
+		"fluid": "tfc:metal/cast_iron",
 		"amount": 200
 	}
 }
