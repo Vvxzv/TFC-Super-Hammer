@@ -2,10 +2,7 @@
 	"type": "tfc:anvil",
 	"result": {
 		"id": "tfcsuperhammer:metal/supershovel_head/black_steel",
-		"count": 1,
-		"components": {
-			"tfc:heat": {}
-		}
+		"count": 1
 	},
 	"ingredient": {
 		"item": "tfc:metal/double_ingot/black_steel"
@@ -15,10 +12,5 @@
 		"hit_second_last",
 		"upset_third_last"
 	],
-	"tier": 5,
-	"apply_bonus": true,
-	"_kubejs_changed_marker": {
-		"source": "server_scripts:main.js",
-		"line": 51
-	}
+	"tier": 5
 }

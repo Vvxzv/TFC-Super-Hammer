@@ -8,9 +8,5 @@
 		"id": "tfc:metal/black_bronze",
 		"amount": 200
 	},
-	"use_durability": true,
-	"_kubejs_changed_marker": {
-		"source": "server_scripts:main.js",
-		"line": 5
-	}
+	"use_durability": true
 }

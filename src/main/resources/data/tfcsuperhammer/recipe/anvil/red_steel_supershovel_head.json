@@ -2,10 +2,7 @@
 	"type": "tfc:anvil",
 	"result": {
 		"id": "tfcsuperhammer:metal/supershovel_head/red_steel",
-		"count": 1,
-		"components": {
-			"tfc:heat": {}
-		}
+		"count": 1
 	},
 	"ingredient": {
 		"item": "tfc:metal/double_ingot/red_steel"
@@ -16,9 +13,5 @@
 		"upset_third_last"
 	],
 	"tier": 6,
-	"apply_bonus": true,
-	"_kubejs_changed_marker": {
-		"source": "server_scripts:main.js",
-		"line": 51
-	}
+	"apply_bonus": true
 }

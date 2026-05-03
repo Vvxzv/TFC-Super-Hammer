@@ -3,10 +3,7 @@
 	"result": {
 		"stack": {
 			"id": "tfcsuperhammer:metal/superhammer/black_bronze",
-			"count": 1,
-			"components": {
-				"tfc:heat": {}
-			}
+			"count": 1
 		},
 		"modifiers": [
 			{
@@ -27,9 +24,5 @@
 		}
 	},
 	"input_row": 0,
-	"input_column": 0,
-	"_kubejs_changed_marker": {
-		"source": "server_scripts:main.js",
-		"line": 5
-	}
+	"input_column": 0
 }

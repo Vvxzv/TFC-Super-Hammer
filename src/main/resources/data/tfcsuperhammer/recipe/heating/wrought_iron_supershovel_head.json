@@ -7,9 +7,5 @@
 	"result_fluid": {
 		"id": "tfc:metal/cast_iron",
 		"amount": 200
-	},
-	"_kubejs_changed_marker": {
-		"source": "server_scripts:main.js",
-		"line": 51
 	}
 }
