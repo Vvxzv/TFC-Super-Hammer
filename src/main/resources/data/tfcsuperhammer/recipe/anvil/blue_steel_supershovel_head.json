@@ -12,5 +12,6 @@
 		"hit_second_last",
 		"upset_third_last"
 	],
-	"tier": 6
+	"tier": 6,
+	"apply_bonus": true
 }
