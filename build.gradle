@@ -133,7 +133,8 @@ dependencies {
     // patchouli
     runtimeOnly "curse.maven:patchouli-306770:6842247"
     // tfc
-    implementation "curse.maven:terrafirmacraft-302973:7634816"
+    //implementation "curse.maven:terrafirmacraft-302973:7634816"
+    implementation "curse.maven:terrafirmacraft-302973:8063726"
 
     // JEI
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
