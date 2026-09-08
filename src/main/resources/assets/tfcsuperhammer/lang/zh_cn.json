@@ -36,6 +36,7 @@
   "item.tfcsuperhammer.metal.supershovel_head.black_steel": "超级黑钢铲头",
   "item.tfcsuperhammer.metal.supershovel_head.blue_steel": "超级蓝钢铲头",
   "item.tfcsuperhammer.metal.supershovel_head.red_steel": "超级红钢铲头",
+  "tooltip.supertool.change_mode": "Shift + 鼠标右键 以切换模式",
   "tooltip.supertool.mode": "当前模式: ",
   "supertool.mode": "模式已切换为：",
   "superhammer.mode.3x3": "3x3 默认模式",

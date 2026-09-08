@@ -1,45 +1,29 @@
 package net.vvxzv.tfcsuperhammer.common.item;
 
-import net.dries007.tfc.common.items.CreativeMiningTool;
-import net.dries007.tfc.common.items.ToolItem;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.event.level.BlockEvent;
 import net.vvxzv.tfcsuperhammer.Config;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
+public class SuperHammerItem extends AbstractSuperToolItem<SuperHammerItem.HammerMode> {
     private static final String MODE_TAG = "super_hammer_mode";
-    private final TagKey<Block> blocks;
 
     public SuperHammerItem(Tier tier, float attackDamage, float attackSpeed, Item.Properties properties) {
         super(tier, attackDamage, attackSpeed, BlockTags.MINEABLE_WITH_PICKAXE, properties);
-        this.blocks = BlockTags.MINEABLE_WITH_PICKAXE;
     }
 
     private boolean isGiantModeEnabled() {
@@ -47,9 +31,14 @@ public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player instanceof ServerPlayer serverPlayer && !level.isClientSide) {
+
+        if(level.isClientSide) {
+            return new InteractionResultHolder<>(InteractionResult.PASS, stack);
+        }
+
+        if (player instanceof ServerPlayer serverPlayer) {
             HammerMode currentMode = this.getCurrentMode(stack);
             HammerMode newMode = switch (currentMode) {
                 case DEFAULT_3x3 -> HammerMode.WIDE_5x3;
@@ -69,10 +58,12 @@ public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
         return super.use(level, player, hand);
     }
 
-    private HammerMode getCurrentMode(ItemStack stack) {
-        if (stack.hasTag() && stack.getTag().contains(MODE_TAG)) {
+    @Override
+    protected HammerMode getCurrentMode(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        if (tag != null && tag.contains(MODE_TAG)) {
             try {
-                HammerMode mode = HammerMode.values()[stack.getTag().getInt(MODE_TAG)];
+                HammerMode mode = HammerMode.values()[tag.getInt(MODE_TAG)];
                 if (mode == HammerMode.GIANT_5x5 && !isGiantModeEnabled()) {
                     this.setCurrentMode(stack, HammerMode.DEFAULT_3x3);
                     return HammerMode.DEFAULT_3x3;
@@ -87,11 +78,13 @@ public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
         return HammerMode.DEFAULT_3x3;
     }
 
-    private void setCurrentMode(ItemStack stack, HammerMode mode) {
+    @Override
+    protected void setCurrentMode(ItemStack stack, HammerMode mode) {
         stack.getOrCreateTag().putInt(MODE_TAG, mode.ordinal());
     }
 
-    private String getModeTranslateKey(HammerMode mode) {
+    @Override
+    protected String getModeTranslateKey(HammerMode mode) {
         return switch (mode) {
             case DEFAULT_3x3 -> "superhammer.mode.3x3";
             case WIDE_5x3 -> "superhammer.mode.5x3";
@@ -100,35 +93,8 @@ public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
     }
 
     @Override
-    public float getDestroySpeed(ItemStack pStack, BlockState pState) {
-        return pState.is(this.blocks) ? (this.speed * 0.4f) : 1.0F;
-    }
-
-    @Override
-    public void mineBlockInCreative(ItemStack stack, Level level, BlockState state, BlockPos pos, Player player) {
-        doMining(stack, level, pos, player);
-    }
-
-    @Override
-    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos origin, LivingEntity entity) {
-        doMining(stack, level, origin, entity);
-        return super.mineBlock(stack, level, state, origin, entity);
-    }
-
-    private void dropResourcesAndBreak(BlockState state, BlockPos pos, Player player, ItemStack stack, Level level) {
-        if (!player.isCreative()) {
-            Block.dropResources(state, level, pos, state.hasBlockEntity() ? level.getBlockEntity(pos) : null, player, player.getMainHandItem());
-            stack.hurtAndBreak(1, player, (p) -> p.broadcastBreakEvent(player.getUsedItemHand()));
-        }
-    }
-
-    private void doMining(ItemStack stack, Level level, BlockPos origin, LivingEntity entity) {
-        if (!(entity instanceof ServerPlayer player) || player.isShiftKeyDown()) return;
-
-        final HammerMode mode = this.getCurrentMode(stack);
-        final Direction face = ((BlockHitResult) player.pick(20.0D, 0.0F, false)).getDirection();
-
-        final int[] offsets = switch (face) {
+    protected int[] getMineBlockOffsets(ServerPlayer player,Direction face, HammerMode mode) {
+        return switch (face) {
             case UP, DOWN -> switch (mode) {
                 case DEFAULT_3x3, WIDE_5x3 -> new int[]{-1, 0, -1, 1, 0, 1};
                 case GIANT_5x5 -> new int[]{-2, 0, -2, 2, 0, 2};
@@ -144,46 +110,11 @@ public class SuperHammerItem extends ToolItem implements CreativeMiningTool {
                 case GIANT_5x5 -> new int[]{-2, -2, 0, 2, 2, 0};
             };
         };
-
-        final BlockPos startPos = origin.offset(offsets[0], offsets[1], offsets[2]);
-        final BlockPos endPos = origin.offset(offsets[3], offsets[4], offsets[5]);
-        final BlockState originBlock = level.getBlockState(origin);
-
-        for (BlockPos pos : BlockPos.betweenClosed(startPos, endPos)) {
-            if (pos.equals(origin) || !isCorrectToolForDrops(stack, level.getBlockState(pos)) || !isCorrectToolForDrops(stack, originBlock)) {
-                continue;
-            }
-
-            final BlockState stateAt = level.getBlockState(pos);
-            final BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, stateAt, player);
-            if (MinecraftForge.EVENT_BUS.post(event)) continue;
-
-            if (stateAt.hasProperty(BlockStateProperties.LAYERS)) {
-                int layers = stateAt.getValue(BlockStateProperties.LAYERS);
-                level.setBlock(pos, layers > 1 ? stateAt.setValue(BlockStateProperties.LAYERS, layers - 1) : Blocks.AIR.defaultBlockState(), 3);
-                dropResourcesAndBreak(stateAt, pos, player, stack, level);
-            } else {
-                dropResourcesAndBreak(stateAt, pos, player, stack, level);
-                level.destroyBlock(pos, false, player);
-            }
-
-            if (stack.getDamageValue() >= stack.getMaxDamage()) break;
-        }
     }
 
     @Override
     public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
         return ToolActions.DEFAULT_PICKAXE_ACTIONS.contains(toolAction);
-    }
-
-    @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-        HammerMode mode = this.getCurrentMode(pStack);
-        String key = this.getModeTranslateKey(mode);
-        pTooltipComponents.add(
-                Component.translatable("tooltip.supertool.mode")
-                        .append(Component.translatable(key).withStyle(ChatFormatting.GOLD))
-        );
     }
 
     public enum HammerMode {

@@ -1,0 +1,13 @@
+{
+  "values": [
+    "tfcsuperhammer:metal/superhammer/bismuth_bronze",
+    "tfcsuperhammer:metal/superhammer/black_bronze",
+    "tfcsuperhammer:metal/superhammer/bronze",
+    "tfcsuperhammer:metal/superhammer/copper",
+    "tfcsuperhammer:metal/superhammer/wrought_iron",
+    "tfcsuperhammer:metal/superhammer/steel",
+    "tfcsuperhammer:metal/superhammer/black_steel",
+    "tfcsuperhammer:metal/superhammer/blue_steel",
+    "tfcsuperhammer:metal/superhammer/red_steel"
+  ]
+}
