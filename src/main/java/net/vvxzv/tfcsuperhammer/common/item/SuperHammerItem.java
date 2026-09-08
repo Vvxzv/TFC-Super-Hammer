@@ -1,23 +1,15 @@
 package net.vvxzv.tfcsuperhammer.common.item;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.vvxzv.tfcsuperhammer.Config;
-import org.jetbrains.annotations.NotNull;
 
 public class SuperHammerItem extends AbstractSuperToolItem<SuperHammerItem.HammerMode> {
     private static final String MODE_TAG = "super_hammer_mode";
@@ -31,31 +23,16 @@ public class SuperHammerItem extends AbstractSuperToolItem<SuperHammerItem.Hamme
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
+    protected HammerMode switchMode(ItemStack stack) {
+        HammerMode currentMode = this.getCurrentMode(stack);
+        HammerMode newMode = switch (currentMode) {
+            case DEFAULT_3x3 -> HammerMode.WIDE_5x3;
+            case WIDE_5x3 -> isGiantModeEnabled()? HammerMode.GIANT_5x5: HammerMode.DEFAULT_3x3;
+            case GIANT_5x5 -> HammerMode.DEFAULT_3x3;
+        };
+        this.setCurrentMode(stack, newMode);
 
-        if(level.isClientSide) {
-            return new InteractionResultHolder<>(InteractionResult.PASS, stack);
-        }
-
-        if (player instanceof ServerPlayer serverPlayer) {
-            HammerMode currentMode = this.getCurrentMode(stack);
-            HammerMode newMode = switch (currentMode) {
-                case DEFAULT_3x3 -> HammerMode.WIDE_5x3;
-                case WIDE_5x3 -> isGiantModeEnabled()? HammerMode.GIANT_5x5: HammerMode.DEFAULT_3x3;
-                case GIANT_5x5 -> HammerMode.DEFAULT_3x3;
-            };
-            setCurrentMode(stack, newMode);
-
-            String key = this.getModeTranslateKey(newMode);
-            serverPlayer.displayClientMessage(
-                    Component.translatable("supertool.mode")
-                            .append(Component.translatable(key).withStyle(ChatFormatting.GOLD)),
-                    true
-            );
-            return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
-        }
-        return super.use(level, player, hand);
+        return newMode;
     }
 
     @Override

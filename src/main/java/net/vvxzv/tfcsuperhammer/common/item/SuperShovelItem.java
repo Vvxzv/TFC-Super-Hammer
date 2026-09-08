@@ -1,23 +1,14 @@
 package net.vvxzv.tfcsuperhammer.common.item;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.vvxzv.tfcsuperhammer.Config;
-import org.jetbrains.annotations.NotNull;
 
 public class SuperShovelItem extends AbstractSuperToolItem<SuperShovelItem.ShovelMode> {
     private static final String MODE_TAG = "super_shovel_mode";
@@ -31,31 +22,16 @@ public class SuperShovelItem extends AbstractSuperToolItem<SuperShovelItem.Shove
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
+    protected ShovelMode switchMode(ItemStack stack) {
+        ShovelMode currentMode = this.getCurrentMode(stack);
+        ShovelMode newMode = switch (currentMode) {
+            case DEFAULT_5x1 -> ShovelMode.SQUARE_3x3;
+            case SQUARE_3x3 -> isGiantModeEnabled()? ShovelMode.GIANT_5x5: ShovelMode.DEFAULT_5x1;
+            case GIANT_5x5 -> ShovelMode.DEFAULT_5x1;
+        };
+        this.setCurrentMode(stack, newMode);
 
-        if(level.isClientSide) {
-            return new InteractionResultHolder<>(InteractionResult.PASS, stack);
-        }
-
-        if (player instanceof ServerPlayer serverPlayer && serverPlayer.isShiftKeyDown()) {
-            ShovelMode currentMode = this.getCurrentMode(stack);
-            ShovelMode newMode = switch (currentMode) {
-                case DEFAULT_5x1 -> ShovelMode.SQUARE_3x3;
-                case SQUARE_3x3 -> isGiantModeEnabled()? ShovelMode.GIANT_5x5: ShovelMode.DEFAULT_5x1;
-                case GIANT_5x5 -> ShovelMode.DEFAULT_5x1;
-            };
-            setCurrentMode(stack, newMode);
-
-            String key = this.getModeTranslateKey(newMode);
-            serverPlayer.displayClientMessage(
-                    Component.translatable("supertool.mode")
-                            .append(Component.translatable(key).withStyle(ChatFormatting.GOLD)),
-                    true
-            );
-            return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
-        }
-        return super.use(level, player, hand);
+        return newMode;
     }
 
     @Override

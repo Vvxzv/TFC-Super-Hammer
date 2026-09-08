@@ -11,6 +11,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -37,6 +40,30 @@ public abstract class AbstractSuperToolItem<MODE> extends ToolItem implements Cr
     protected AbstractSuperToolItem(Tier tier, float attackDamage, float attackSpeed, TagKey<Block> mineableBlocks, Properties properties) {
         super(tier, attackDamage, attackSpeed, mineableBlocks, properties);
         this.blocks = mineableBlocks;
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+
+        if(level.isClientSide) {
+            return new InteractionResultHolder<>(InteractionResult.PASS, stack);
+        }
+
+        if (player instanceof ServerPlayer serverPlayer && serverPlayer.isShiftKeyDown()) {
+            MODE newMode = this.switchMode(stack);
+            String key = this.getModeTranslateKey(newMode);
+            serverPlayer.displayClientMessage(
+                    Component.translatable("supertool.mode")
+                            .append(Component.translatable(key).withStyle(ChatFormatting.GOLD)),
+                    true
+            );
+
+            serverPlayer.getCooldowns().addCooldown(stack.getItem(), 10);
+            return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
+        }
+
+        return super.use(level, player, hand);
     }
 
     @SuppressWarnings("removal")
@@ -71,6 +98,8 @@ public abstract class AbstractSuperToolItem<MODE> extends ToolItem implements Cr
     protected abstract MODE getCurrentMode(ItemStack stack);
 
     protected abstract void setCurrentMode(ItemStack stack, MODE mode);
+
+    protected abstract MODE switchMode(ItemStack stack);
 
     protected abstract String getModeTranslateKey(MODE mode);
 
@@ -139,6 +168,7 @@ public abstract class AbstractSuperToolItem<MODE> extends ToolItem implements Cr
     public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
         MODE mode = this.getCurrentMode(pStack);
         String key = this.getModeTranslateKey(mode);
+        pTooltipComponents.add(Component.translatable("tooltip.supertool.single_block_mode").withStyle(ChatFormatting.GRAY));
         pTooltipComponents.add(Component.translatable("tooltip.supertool.change_mode").withStyle(ChatFormatting.GRAY));
         pTooltipComponents.add(
                 Component.translatable("tooltip.supertool.mode")

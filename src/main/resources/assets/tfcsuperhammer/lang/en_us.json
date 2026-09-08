@@ -38,6 +38,7 @@
   "item.tfcsuperhammer.metal.supershovel_head.red_steel": "Super Red Steel Shovel Head",
   "tooltip.supertool.change_mode": "Shift + Right-Click to switch mode.",
   "tooltip.supertool.mode": "Current mode:",
+  "tooltip.supertool.single_block_mode": "Hold Shift only destroy the current block.",
   "supertool.mode": "Mode switch to: ",
   "superhammer.mode.3x3": "3x3 Default Mode",
   "superhammer.mode.5x3": "5x3 Horizontal Scaling Mode",
