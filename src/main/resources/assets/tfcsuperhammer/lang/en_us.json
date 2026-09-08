@@ -36,6 +36,7 @@
   "item.tfcsuperhammer.metal.supershovel_head.black_steel": "Super Black Steel Shovel Head",
   "item.tfcsuperhammer.metal.supershovel_head.blue_steel": "Super Blue Steel Shovel Head",
   "item.tfcsuperhammer.metal.supershovel_head.red_steel": "Super Red Steel Shovel Head",
+  "tooltip.supertool.change_mode": "Shift + Right-Click to switch mode.",
   "tooltip.supertool.mode": "Current mode:",
   "supertool.mode": "Mode switch to: ",
   "superhammer.mode.3x3": "3x3 Default Mode",
