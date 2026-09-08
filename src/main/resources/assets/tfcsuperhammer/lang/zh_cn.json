@@ -38,6 +38,7 @@
   "item.tfcsuperhammer.metal.supershovel_head.red_steel": "超级红钢铲头",
   "tooltip.supertool.change_mode": "Shift + 鼠标右键 以切换模式",
   "tooltip.supertool.mode": "当前模式: ",
+  "tooltip.supertool.single_block_mode": "按住 Shift 仅破坏当前方块",
   "supertool.mode": "模式已切换为：",
   "superhammer.mode.3x3": "3x3 默认模式",
   "superhammer.mode.5x3": "5x3 水平扩展模式",

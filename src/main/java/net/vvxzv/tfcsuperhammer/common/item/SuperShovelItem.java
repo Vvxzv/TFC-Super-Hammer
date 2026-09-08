@@ -1,17 +1,10 @@
 package net.vvxzv.tfcsuperhammer.common.item;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.vvxzv.tfcsuperhammer.Config;
@@ -29,26 +22,16 @@ public class SuperShovelItem extends AbstractSuperToolItem<SuperShovelItem.Shove
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (player instanceof ServerPlayer serverPlayer && !level.isClientSide) {
-            ShovelMode currentMode = this.getCurrentMode(stack);
-            ShovelMode newMode = switch (currentMode) {
-                case DEFAULT_5x1 -> ShovelMode.SQUARE_3x3;
-                case SQUARE_3x3 -> isGiantModeEnabled()? ShovelMode.GIANT_5x5: ShovelMode.DEFAULT_5x1;
-                case GIANT_5x5 -> ShovelMode.DEFAULT_5x1;
-            };
-            setCurrentMode(stack, newMode);
+    protected ShovelMode switchMode(ItemStack stack) {
+        ShovelMode currentMode = this.getCurrentMode(stack);
+        ShovelMode newMode = switch (currentMode) {
+            case DEFAULT_5x1 -> ShovelMode.SQUARE_3x3;
+            case SQUARE_3x3 -> isGiantModeEnabled()? ShovelMode.GIANT_5x5: ShovelMode.DEFAULT_5x1;
+            case GIANT_5x5 -> ShovelMode.DEFAULT_5x1;
+        };
+        this.setCurrentMode(stack, newMode);
 
-            String key = this.getModeTranslateKey(newMode);
-            serverPlayer.displayClientMessage(
-                    Component.translatable("supertool.mode")
-                            .append(Component.translatable(key).withStyle(ChatFormatting.GOLD)),
-                    true
-            );
-            return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
-        }
-        return super.use(level, player, hand);
+        return newMode;
     }
 
     @Override

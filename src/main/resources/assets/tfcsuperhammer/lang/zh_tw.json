@@ -39,6 +39,7 @@
   "item.tfcsuperhammer.metal.supershovel_head.red_steel": "超級紅鋼鏟頭",
   "tooltip.supertool.change_mode": "Shift + 滑鼠右鍵 以切換模式",
   "tooltip.supertool.mode": "目前模式：",
+  "tooltip.supertool.single_block_mode": "按住 Shift 僅破壞當前方塊",
   "supertool.mode": "模式已切換為：",
   "superhammer.mode.3x3": "3x3 預設模式",
   "superhammer.mode.5x3": "5x3 水平擴展模式",
